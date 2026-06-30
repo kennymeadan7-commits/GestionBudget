@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GestionBudget</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1>GestionBudget</h1>
+      <p>Suivez vos revenus et dépenses simplement.</p>
+    </header>
+
+    <main class="layout">
+      <section class="card">
+        <h2>Nouvelle transaction</h2>
+        <form id="transaction-form" class="form-grid">
+          <label>
+            Date
+            <input type="date" id="date" required />
+          </label>
+          <label>
+            Type
+            <select id="type" required>
+              <option value="depense">Dépense</option>
+              <option value="revenu">Revenu</option>
+            </select>
+          </label>
+          <label>
+            Catégorie
+            <input
+              type="text"
+              id="category"
+              placeholder="Ex: Alimentation"
+              required
+            />
+          </label>
+          <label>
+            Montant (€)
+            <input
+              type="number"
+              id="amount"
+              min="0.01"
+              step="0.01"
+              placeholder="0.00"
+              required
+            />
+          </label>
+          <label class="full-width">
+            Description
+            <input type="text" id="description" placeholder="Optionnel" />
+          </label>
+          <button type="submit">Ajouter</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Objectif budget mensuel</h2>
+        <form id="budget-form" class="budget-row">
+          <input
+            type="number"
+            id="monthly-budget"
+            min="0"
+            step="1"
+            placeholder="Ex: 1500"
+          />
+          <button type="submit">Enregistrer</button>
+        </form>
+        <p id="budget-message" class="muted"></p>
+      </section>
+
+      <section class="card">
+        <h2>Résumé</h2>
+        <div class="filters">
+          <label>
+            Mois
+            <input type="month" id="month-filter" />
+          </label>
+          <button id="reset-filter" type="button">Tout afficher</button>
+        </div>
+        <div class="summary-grid">
+          <article>
+            <h3>Revenus</h3>
+            <p id="total-income" class="income">0,00 €</p>
+          </article>
+          <article>
+            <h3>Dépenses</h3>
+            <p id="total-expenses" class="expense">0,00 €</p>
+          </article>
+          <article>
+            <h3>Solde</h3>
+            <p id="balance">0,00 €</p>
+          </article>
+        </div>
+        <div class="progress">
+          <div id="budget-progress" class="progress-bar"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Dépenses par catégorie</h2>
+        <div id="category-chart" class="chart"></div>
+      </section>
+
+      <section class="card">
+        <h2>Transactions</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Catégorie</th>
+                <th>Description</th>
+                <th>Montant</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="transactions-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
