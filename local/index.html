@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GestionBudget — Gestion de budget</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="header__inner">
+      <div class="header__logo">💰</div>
+      <div>
+        <h1 class="header__title">GestionBudget</h1>
+        <p class="header__subtitle">Suivez vos revenus et dépenses</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <p class="month-label" id="monthLabel"></p>
+
+    <nav class="tabs" role="tablist">
+      <button class="tabs__btn tabs__btn--active" data-tab="dashboard" role="tab">📊 Tableau de bord</button>
+      <button class="tabs__btn" data-tab="transactions" role="tab">📝 Transactions</button>
+      <button class="tabs__btn" data-tab="budgets" role="tab">🐷 Budgets</button>
+    </nav>
+
+    <!-- Tableau de bord -->
+    <section id="tab-dashboard" class="tab-panel tab-panel--active">
+      <div class="stats-grid">
+        <article class="stat-card stat-card--income">
+          <div>
+            <p class="stat-card__label">Revenus</p>
+            <p class="stat-card__value" id="statIncome">0,00 €</p>
+            <p class="stat-card__hint">Ce mois</p>
+          </div>
+          <span class="stat-card__icon">↓</span>
+        </article>
+        <article class="stat-card stat-card--expense">
+          <div>
+            <p class="stat-card__label">Dépenses</p>
+            <p class="stat-card__value" id="statExpenses">0,00 €</p>
+            <p class="stat-card__hint">Ce mois</p>
+          </div>
+          <span class="stat-card__icon">↑</span>
+        </article>
+        <article class="stat-card stat-card--balance">
+          <div>
+            <p class="stat-card__label">Solde</p>
+            <p class="stat-card__value" id="statBalance">0,00 €</p>
+            <p class="stat-card__hint" id="statBalanceHint">—</p>
+          </div>
+          <span class="stat-card__icon">📈</span>
+        </article>
+        <article class="stat-card">
+          <div>
+            <p class="stat-card__label">Taux d'épargne</p>
+            <p class="stat-card__value" id="statSavings">0%</p>
+            <p class="stat-card__hint" id="statBudgetTotal">Budget : 0,00 €</p>
+          </div>
+          <span class="stat-card__icon">🐷</span>
+        </article>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <h2 class="card__title">Répartition des dépenses</h2>
+          <div id="chartContainer" class="chart"></div>
+        </article>
+        <article class="card">
+          <h2 class="card__title">Dernières transactions</h2>
+          <ul id="recentList" class="tx-list"></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- Transactions -->
+    <section id="tab-transactions" class="tab-panel">
+      <div class="grid-form">
+        <article class="card">
+          <h2 class="card__title">Nouvelle transaction</h2>
+
+          <div class="type-toggle">
+            <button type="button" class="type-toggle__btn type-toggle__btn--active" data-type="expense">Dépense</button>
+            <button type="button" class="type-toggle__btn" data-type="income">Revenu</button>
+          </div>
+
+          <form id="txForm" class="form">
+            <label class="form__label">
+              Montant (€)
+              <input type="number" id="txAmount" class="form__input" step="0.01" min="0.01" placeholder="0,00" required />
+            </label>
+            <label class="form__label">
+              Catégorie
+              <select id="txCategory" class="form__input" required></select>
+            </label>
+            <label class="form__label">
+              Description
+              <input type="text" id="txDescription" class="form__input" placeholder="Ex: Courses du week-end" />
+            </label>
+            <label class="form__label">
+              Date
+              <input type="date" id="txDate" class="form__input" required />
+            </label>
+            <button type="submit" class="btn btn--primary">+ Ajouter</button>
+          </form>
+        </article>
+
+        <article class="card">
+          <h2 class="card__title">Historique (<span id="txCount">0</span>)</h2>
+          <ul id="allTxList" class="tx-list"></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- Budgets -->
+    <section id="tab-budgets" class="tab-panel">
+      <div class="grid-2">
+        <article class="card">
+          <h2 class="card__title">Budgets par catégorie</h2>
+          <p class="card__desc">Modifiez les montants dans les champs à droite de chaque barre.</p>
+          <div id="budgetList" class="budget-list"></div>
+        </article>
+        <article class="card">
+          <h2 class="card__title">Vue d'ensemble</h2>
+          <div class="overview">
+            <div class="overview__row">
+              <span>Budget mensuel total</span>
+              <strong id="overviewBudget">0,00 €</strong>
+            </div>
+            <div class="overview__row overview__row--expense">
+              <span>Dépensé ce mois</span>
+              <strong id="overviewSpent">0,00 €</strong>
+            </div>
+            <div class="overview__row overview__row--remaining">
+              <span>Reste disponible</span>
+              <strong id="overviewRemaining">0,00 €</strong>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
