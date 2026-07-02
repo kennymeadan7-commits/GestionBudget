@@ -83,6 +83,40 @@
         </article>
       </div>
 
+      <article class="card card--savings" id="savingsGoalCard">
+        <div class="savings-goal__header">
+          <h2 class="card__title">🎯 Objectif d'épargne</h2>
+          <p class="savings-goal__month" id="savingsGoalMonth"></p>
+        </div>
+        <div class="savings-goal__body">
+          <div class="savings-goal__stats">
+            <div>
+              <p class="savings-goal__label">Épargné</p>
+              <p class="savings-goal__value" id="savingsSaved">0 FCFA</p>
+            </div>
+            <div class="savings-goal__divider">/</div>
+            <div>
+              <p class="savings-goal__label">Objectif</p>
+              <p class="savings-goal__value savings-goal__value--goal" id="savingsTarget">0 FCFA</p>
+            </div>
+            <div class="savings-goal__pct" id="savingsPct">0%</div>
+          </div>
+          <div class="savings-goal__track">
+            <div class="savings-goal__fill" id="savingsFill"></div>
+          </div>
+          <p class="savings-goal__status" id="savingsStatus"></p>
+          <form id="savingsGoalForm" class="savings-goal__form">
+            <label class="form__label">
+              Définir l'objectif (FCFA)
+              <div class="savings-goal__input-row">
+                <input type="number" id="savingsGoalInput" class="form__input" step="1000" min="0" placeholder="Ex: 30000" />
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+              </div>
+            </label>
+          </form>
+        </div>
+      </article>
+
       <div class="grid-2">
         <article class="card">
           <h2 class="card__title">Répartition des dépenses</h2>
@@ -179,6 +213,19 @@
           <p id="importStatus" class="import-status"></p>
         </article>
       </div>
+      <article class="card card--info card--online">
+        <h2 class="card__title">🌐 Utiliser sur votre téléphone</h2>
+        <p class="card__desc">Ouvrez ce lien dans Chrome ou Safari :</p>
+        <p class="online-link">
+          <a id="onlineUrl" href="https://kennymeadan7-commits.github.io/GestionBudget/" target="_blank" rel="noopener">
+            kennymeadan7-commits.github.io/GestionBudget
+          </a>
+        </p>
+        <ul class="info-list">
+          <li><strong>Android</strong> — Ouvrir le lien → Menu ⋮ → « Ajouter à l'écran d'accueil »</li>
+          <li><strong>iPhone</strong> — Ouvrir dans Safari → Partager → « Sur l'écran d'accueil »</li>
+        </ul>
+      </article>
       <article class="card card--info">
         <h2 class="card__title">📲 Installer sur téléphone</h2>
         <p class="card__desc">Pour installer l'application :</p>

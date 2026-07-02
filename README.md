@@ -2,40 +2,38 @@
 
 Application de gestion de budget personnelle adaptée au **Bénin**, en **FCFA**.
 
-## Lancer l'application
+## 🌐 Utiliser sur votre téléphone (en ligne)
 
-Double-cliquez sur **`OUVRIR.bat`** ou ouvrez **`index.html`** dans votre navigateur.
+**https://kennymeadan7-commits.github.io/GestionBudget/**
+
+1. Ouvrez ce lien dans **Chrome** (Android) ou **Safari** (iPhone)
+2. **Android** — Menu ⋮ → « Ajouter à l'écran d'accueil »
+3. **iPhone** — Partager → « Sur l'écran d'accueil »
+
+## Utilisation locale (PC)
+
+Double-cliquez sur **`OUVRIR.bat`** ou ouvrez **`index.html`**.
 
 ## Fonctionnalités
 
-- **FCFA** — Tous les montants en Franc CFA
-- **Filtre par mois** — Naviguez entre les mois passés
-- **Alertes budget** — Avertissement à 80 % et alerte si dépassé
-- **Export CSV / JSON** — Sauvegardez et restaurez vos données
-- **PWA** — Installable sur téléphone (Android / iPhone)
-- **Catégories locales** — MTN MoMo, Moov Money, Tontine, SBEE, zémidjan...
+- FCFA, catégories béninoises (MTN MoMo, Moov, Tontine, SBEE…)
+- Filtre par mois, alertes budget, export CSV/JSON
+- **Objectif d'épargne** — ex. épargner 30 000 FCFA ce mois
+- PWA installable sur téléphone
 
-## Onglet « Données »
+## Activer GitHub Pages (une seule fois)
 
-| Action | Description |
-|--------|-------------|
-| Exporter JSON | Sauvegarde complète (transactions + catégories) |
-| Exporter CSV | Ouvrir dans Excel / LibreOffice |
-| Importer JSON | Restaurer une sauvegarde |
+Si le lien en ligne ne fonctionne pas encore :
 
-## Installer sur téléphone
-
-1. Hébergez l'app en ligne (GitHub Pages) ou ouvrez via navigateur
-2. **Android** — Menu ⋮ → « Ajouter à l'écran d'accueil »
-3. **iPhone** — Partager → « Sur l'écran d'accueil »
+1. Allez sur https://github.com/kennymeadan7-commits/GestionBudget/settings/pages
+2. Sous **Source**, choisissez **GitHub Actions**
+3. Attendez 1–2 minutes après un push sur `main`
 
 ## Fichiers
 
 | Fichier | Rôle |
 |---------|------|
 | `index.html` | Page principale |
-| `styles.css` | Mise en forme |
 | `app.js` | Logique |
-| `manifest.json` | Configuration PWA |
-| `sw.js` | Mode hors ligne |
-| `OUVRIR.bat` | Lancement Windows |
+| `styles.css` | Mise en forme |
+| `manifest.json` + `sw.js` | Application installable |

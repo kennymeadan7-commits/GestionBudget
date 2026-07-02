@@ -50,6 +50,10 @@ function mergeCategories(existing) {
   return Array.from(map.values());
 }
 
+function getMonthKey(year, month) {
+  return `${year}-${String(month + 1).padStart(2, '0')}`;
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -58,10 +62,16 @@ function loadState() {
       return {
         transactions: parsed.transactions ?? [],
         categories: mergeCategories(parsed.categories ?? []),
+        savingsGoals: parsed.savingsGoals ?? {},
       };
     }
   } catch (_) { /* ignore */ }
-  return { transactions: getDemoTransactions(), categories: [...DEFAULT_CATEGORIES] };
+  const key = getMonthKey(new Date().getFullYear(), new Date().getMonth());
+  return {
+    transactions: getDemoTransactions(),
+    categories: [...DEFAULT_CATEGORIES],
+    savingsGoals: { [key]: 30000 },
+  };
 }
 
 let state = loadState();
@@ -299,6 +309,43 @@ function updateCategorySelect() {
   select.innerHTML = filtered.map((c) => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
 }
 
+function renderSavingsGoal(stats) {
+  const monthKey = getMonthKey(selectedYear, selectedMonth);
+  const goal = state.savingsGoals[monthKey] || 0;
+  const saved = Math.max(0, stats.balance);
+  const pct = goal > 0 ? Math.min((saved / goal) * 100, 100) : 0;
+  const remaining = goal - saved;
+
+  document.getElementById('savingsGoalMonth').textContent = formatMonthLabel(selectedYear, selectedMonth);
+  document.getElementById('savingsSaved').textContent = formatCurrency(saved);
+  document.getElementById('savingsTarget').textContent = goal > 0 ? formatCurrency(goal) : 'Non défini';
+  document.getElementById('savingsPct').textContent = goal > 0 ? `${Math.round(pct)}%` : '—';
+
+  const fill = document.getElementById('savingsFill');
+  fill.style.width = `${pct}%`;
+  fill.className = 'savings-goal__fill';
+  if (goal > 0 && saved >= goal) fill.classList.add('savings-goal__fill--done');
+  else if (stats.balance < 0) fill.classList.add('savings-goal__fill--danger');
+  else if (pct >= 80) fill.classList.add('savings-goal__fill--warn');
+
+  const status = document.getElementById('savingsStatus');
+  if (goal <= 0) {
+    status.textContent = 'Définissez un objectif pour suivre votre épargne ce mois-ci.';
+    status.className = 'savings-goal__status';
+  } else if (stats.balance < 0) {
+    status.textContent = `Déficit de ${formatCurrency(Math.abs(stats.balance))} — objectif non atteint pour l'instant.`;
+    status.className = 'savings-goal__status savings-goal__status--danger';
+  } else if (saved >= goal) {
+    status.textContent = `🎉 Bravo ! Objectif atteint (+${formatCurrency(saved - goal)}).`;
+    status.className = 'savings-goal__status savings-goal__status--success';
+  } else {
+    status.textContent = `Encore ${formatCurrency(remaining)} à épargner pour atteindre l'objectif.`;
+    status.className = 'savings-goal__status';
+  }
+
+  document.getElementById('savingsGoalInput').value = goal > 0 ? goal : '';
+}
+
 function buildMonthOptions() {
   const select = document.getElementById('monthSelect');
   const months = new Set();
@@ -338,6 +385,7 @@ function render() {
   renderTxList(document.getElementById('allTxList'), stats.monthTx, true);
   document.getElementById('txCount').textContent = stats.monthTx.length;
   renderBudgets(stats.expensesByCategory, stats.totalBudget, stats.expenses);
+  renderSavingsGoal(stats);
   updateCategorySelect();
   buildMonthOptions();
 
@@ -398,6 +446,7 @@ function importJson(file) {
       state = {
         transactions: data.transactions,
         categories: mergeCategories(data.categories),
+        savingsGoals: data.savingsGoals ?? {},
       };
       saveState();
       render();
@@ -486,6 +535,23 @@ function initDataTab() {
   });
 }
 
+function initSavingsGoal() {
+  document.getElementById('savingsGoalForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const val = parseFloat(document.getElementById('savingsGoalInput').value);
+    const monthKey = getMonthKey(selectedYear, selectedMonth);
+    if (isNaN(val) || val < 0) return;
+    if (val === 0) {
+      delete state.savingsGoals[monthKey];
+    } else {
+      state.savingsGoals[monthKey] = val;
+    }
+    saveState();
+    render();
+    showToast(val > 0 ? `Objectif fixé : ${formatCurrency(val)}` : 'Objectif supprimé', 'success');
+  });
+}
+
 function initPWA() {
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
@@ -514,5 +580,6 @@ initTypeToggle();
 initForm();
 initMonthPicker();
 initDataTab();
+initSavingsGoal();
 initPWA();
 render();

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gestion-budget-v1';
+const CACHE_NAME = 'gestion-budget-v2';
 const ASSETS = ['./', './index.html', './styles.css', './app.js', './manifest.json', './icons/icon-192.svg', './icons/icon-512.svg'];
 
 self.addEventListener('install', (e) => {

@@ -793,3 +793,130 @@ body {
 .overview__row--remaining.overview__row--negative strong {
   color: var(--expense);
 }
+
+/* Savings goal */
+.card--savings {
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 60%);
+  border-color: #a7f3d0;
+}
+
+.savings-goal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.savings-goal__month {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.savings-goal__stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.savings-goal__label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.15rem;
+}
+
+.savings-goal__value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--income);
+}
+
+.savings-goal__value--goal {
+  color: var(--primary);
+}
+
+.savings-goal__divider {
+  font-size: 1.5rem;
+  color: #cbd5e1;
+  font-weight: 300;
+}
+
+.savings-goal__pct {
+  margin-left: auto;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.savings-goal__track {
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.savings-goal__fill {
+  height: 100%;
+  width: 0;
+  background: var(--primary);
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+
+.savings-goal__fill--warn { background: var(--warning); }
+.savings-goal__fill--done { background: var(--income); }
+.savings-goal__fill--danger { background: var(--expense); }
+
+.savings-goal__status {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.savings-goal__status--success {
+  color: var(--income);
+  font-weight: 600;
+}
+
+.savings-goal__status--danger {
+  color: var(--expense);
+  font-weight: 500;
+}
+
+.savings-goal__input-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.savings-goal__input-row .form__input {
+  flex: 1;
+}
+
+.savings-goal__input-row .btn {
+  flex-shrink: 0;
+  padding: 0.65rem 1rem;
+}
+
+.card--online {
+  margin-top: 1.5rem;
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.online-link {
+  margin: 0.5rem 0 1rem;
+}
+
+.online-link a {
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  word-break: break-all;
+}
