@@ -1,12 +1,13 @@
 const STORAGE_KEY = 'gestion-budget-benin';
 
-const INCOME_IDS = ['salary', 'commerce', 'transfert', 'mobile_in'];
+const INCOME_IDS = ['salary', 'commerce', 'transfert', 'mtn_in', 'moov_in'];
 
 const DEFAULT_CATEGORIES = [
   { id: 'salary', name: 'Salaire', color: '#10b981' },
   { id: 'commerce', name: 'Commerce / Activité', color: '#06b6d4' },
   { id: 'transfert', name: 'Transfert (famille)', color: '#22c55e' },
-  { id: 'mobile_in', name: 'Mobile Money reçu', color: '#facc15' },
+  { id: 'mtn_in', name: 'MTN MoMo reçu', color: '#ffcc00' },
+  { id: 'moov_in', name: 'Moov Money reçu', color: '#0066cc' },
   { id: 'food', name: 'Alimentation / Marché', color: '#f59e0b', budgetLimit: 120000 },
   { id: 'transport', name: 'Transport (zémi, taxi)', color: '#6366f1', budgetLimit: 40000 },
   { id: 'housing', name: 'Logement / Loyer', color: '#8b5cf6', budgetLimit: 80000 },
@@ -14,7 +15,9 @@ const DEFAULT_CATEGORIES = [
   { id: 'utilities', name: 'SBEE / SONEB', color: '#eab308', budgetLimit: 25000 },
   { id: 'education', name: 'Éducation / Scolarité', color: '#3b82f6', budgetLimit: 50000 },
   { id: 'health', name: 'Santé', color: '#14b8a6', budgetLimit: 20000 },
-  { id: 'mobile_out', name: 'Mobile Money (frais)', color: '#facc15', budgetLimit: 10000 },
+  { id: 'mtn_out', name: 'MTN MoMo (envoi/frais)', color: '#ffcc00', budgetLimit: 15000 },
+  { id: 'moov_out', name: 'Moov Money (envoi/frais)', color: '#0066cc', budgetLimit: 15000 },
+  { id: 'tontine', name: 'Tontine / Cotisation', color: '#be185d', budgetLimit: 25000 },
   { id: 'clothing', name: 'Habits / Vêtements', color: '#f97316', budgetLimit: 30000 },
   { id: 'entertainment', name: 'Loisirs', color: '#ec4899', budgetLimit: 25000 },
   { id: 'family', name: 'Famille / Entraide', color: '#a855f7', budgetLimit: 30000 },
@@ -30,25 +33,42 @@ function getDemoTransactions() {
     { id: 'd2', type: 'expense', amount: 75000, categoryId: 'housing', description: 'Loyer mensuel', date: `${y}-${m}-03` },
     { id: 'd3', type: 'expense', amount: 18500, categoryId: 'food', description: 'Courses au marché Dantokpa', date: `${y}-${m}-05` },
     { id: 'd4', type: 'expense', amount: 3500, categoryId: 'transport', description: 'Zémidjans de la semaine', date: `${y}-${m}-06` },
-    { id: 'd5', type: 'expense', amount: 5000, categoryId: 'communication', description: 'Crédit MTN MoMo', date: `${y}-${m}-07` },
+    { id: 'd5', type: 'expense', amount: 5000, categoryId: 'mtn_out', description: 'Transfert MTN MoMo', date: `${y}-${m}-07` },
     { id: 'd6', type: 'expense', amount: 15000, categoryId: 'utilities', description: 'Facture SBEE', date: `${y}-${m}-08` },
-    { id: 'd7', type: 'expense', amount: 12000, categoryId: 'food', description: 'Repas maquis', date: `${y}-${m}-12` },
+    { id: 'd7', type: 'expense', amount: 10000, categoryId: 'tontine', description: 'Cotisation tontine du mois', date: `${y}-${m}-10` },
     { id: 'd8', type: 'income', amount: 45000, categoryId: 'commerce', description: 'Vente boutique', date: `${y}-${m}-15` },
     { id: 'd9', type: 'expense', amount: 8000, categoryId: 'health', description: 'Pharmacie', date: `${y}-${m}-18` },
-    { id: 'd10', type: 'income', amount: 30000, categoryId: 'transfert', description: 'Transfert famille', date: `${y}-${m}-20` },
+    { id: 'd10', type: 'income', amount: 30000, categoryId: 'mtn_in', description: 'Réception MTN MoMo', date: `${y}-${m}-20` },
   ];
 }
 
-let state = loadState();
-let currentType = 'expense';
+function mergeCategories(existing) {
+  const map = new Map(existing.map((c) => [c.id, c]));
+  DEFAULT_CATEGORIES.forEach((def) => {
+    if (!map.has(def.id)) map.set(def.id, { ...def });
+  });
+  return Array.from(map.values());
+}
 
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        transactions: parsed.transactions ?? [],
+        categories: mergeCategories(parsed.categories ?? []),
+      };
+    }
   } catch (_) { /* ignore */ }
-  return { transactions: getDemoTransactions(), categories: DEFAULT_CATEGORIES };
+  return { transactions: getDemoTransactions(), categories: [...DEFAULT_CATEGORIES] };
 }
+
+let state = loadState();
+let currentType = 'expense';
+const now = new Date();
+let selectedYear = now.getFullYear();
+let selectedMonth = now.getMonth();
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -67,22 +87,23 @@ function formatDate(dateStr) {
   return new Intl.DateTimeFormat('fr-BJ', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(dateStr));
 }
 
+function formatMonthLabel(year, month) {
+  return new Intl.DateTimeFormat('fr-BJ', { month: 'long', year: 'numeric' }).format(new Date(year, month, 1));
+}
+
 function getCategory(id) {
   return state.categories.find((c) => c.id === id);
 }
 
-function getMonthTransactions() {
-  const now = new Date();
-  const month = now.getMonth();
-  const year = now.getFullYear();
+function getMonthTransactions(year = selectedYear, month = selectedMonth) {
   return state.transactions.filter((t) => {
-    const d = new Date(t.date);
+    const d = new Date(t.date + 'T12:00:00');
     return d.getMonth() === month && d.getFullYear() === year;
   });
 }
 
-function computeStats() {
-  const monthTx = getMonthTransactions();
+function computeStats(year = selectedYear, month = selectedMonth) {
+  const monthTx = getMonthTransactions(year, month);
   const income = monthTx.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0);
   const expenses = monthTx.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
   const balance = income - expenses;
@@ -99,6 +120,42 @@ function computeStats() {
   });
 
   return { income, expenses, balance, savingsRate, totalBudget, monthTx, expensesByCategory };
+}
+
+function getBudgetAlerts(expensesByCategory) {
+  const alerts = [];
+  expensesByCategory.forEach(({ category, spent }) => {
+    if (category.budgetLimit == null || category.budgetLimit <= 0) return;
+    const pct = (spent / category.budgetLimit) * 100;
+    if (pct >= 100) {
+      alerts.push({ level: 'danger', category, spent, pct, message: `${category.name} : budget dépassé (${formatCurrency(spent)} / ${formatCurrency(category.budgetLimit)})` });
+    } else if (pct >= 80) {
+      alerts.push({ level: 'warn', category, spent, pct, message: `${category.name} : ${Math.round(pct)}% du budget utilisé` });
+    }
+  });
+  return alerts.sort((a, b) => b.pct - a.pct);
+}
+
+function renderAlerts(alerts) {
+  const container = document.getElementById('budgetAlerts');
+  if (!alerts.length) {
+    container.hidden = true;
+    container.innerHTML = '';
+    return;
+  }
+  container.hidden = false;
+  container.innerHTML = alerts
+    .map((a) => `<div class="alert alert--${a.level}"><span>${a.level === 'danger' ? '🚨' : '⚠️'}</span> ${escapeHtml(a.message)}</div>`)
+    .join('');
+}
+
+function showToast(message, type = 'info') {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = `toast toast--${type}`;
+  toast.hidden = false;
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => { toast.hidden = true; }, 3500);
 }
 
 function renderTransactionItem(tx, showDelete) {
@@ -124,9 +181,11 @@ function renderTransactionItem(tx, showDelete) {
   `;
   if (showDelete) {
     li.querySelector('.tx-item__delete').addEventListener('click', () => {
+      if (!confirm('Supprimer cette transaction ?')) return;
       state.transactions = state.transactions.filter((t) => t.id !== tx.id);
       saveState();
       render();
+      showToast('Transaction supprimée', 'info');
     });
   }
   return li;
@@ -134,9 +193,10 @@ function renderTransactionItem(tx, showDelete) {
 
 function renderTxList(container, transactions, showDelete, limit) {
   container.innerHTML = '';
-  const list = limit ? transactions.slice(0, limit) : transactions;
+  const sorted = [...transactions].sort((a, b) => b.date.localeCompare(a.date));
+  const list = limit ? sorted.slice(0, limit) : sorted;
   if (list.length === 0) {
-    container.innerHTML = '<li class="tx-empty">Aucune transaction pour le moment</li>';
+    container.innerHTML = '<li class="tx-empty">Aucune transaction pour ce mois</li>';
     return;
   }
   list.forEach((tx) => container.appendChild(renderTransactionItem(tx, showDelete)));
@@ -191,6 +251,7 @@ function renderBudgets(expensesByCategory, totalBudget, expenses) {
             <span class="budget-item__name">
               <span class="tx-item__dot" style="background:${category.color}"></span>
               ${escapeHtml(category.name)}
+              ${isOver ? '<span class="budget-item__badge budget-item__badge--over">Dépassé</span>' : pct >= 80 ? '<span class="budget-item__badge budget-item__badge--warn">Attention</span>' : ''}
             </span>
             <span class="budget-item__amounts">${formatCurrency(spent)} / ${formatCurrency(limit)}</span>
           </div>
@@ -226,27 +287,44 @@ function renderBudgets(expensesByCategory, totalBudget, expenses) {
   const remaining = totalBudget - expenses;
   const remainingEl = document.getElementById('overviewRemaining');
   remainingEl.textContent = formatCurrency(remaining);
-  const row = remainingEl.closest('.overview__row');
-  row.classList.toggle('overview__row--negative', remaining < 0);
+  document.getElementById('overviewRemainingRow').classList.toggle('overview__row--negative', remaining < 0);
 }
 
 function updateCategorySelect() {
   const select = document.getElementById('txCategory');
   const filtered = state.categories.filter((c) => {
     if (currentType === 'income') return INCOME_IDS.includes(c.id);
-    return !INCOME_IDS.includes(c.id) || c.budgetLimit != null;
+    return !INCOME_IDS.includes(c.id);
   });
   select.innerHTML = filtered.map((c) => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
 }
 
+function buildMonthOptions() {
+  const select = document.getElementById('monthSelect');
+  const months = new Set();
+  state.transactions.forEach((t) => {
+    const d = new Date(t.date + 'T12:00:00');
+    months.add(`${d.getFullYear()}-${d.getMonth()}`);
+  });
+  months.add(`${now.getFullYear()}-${now.getMonth()}`);
+  months.add(`${selectedYear}-${selectedMonth}`);
+
+  const sorted = Array.from(months)
+    .map((k) => { const [y, m] = k.split('-').map(Number); return { y, m }; })
+    .sort((a, b) => b.y - a.y || b.m - a.m);
+
+  select.innerHTML = sorted
+    .map(({ y, m }) => `<option value="${y}-${m}" ${y === selectedYear && m === selectedMonth ? 'selected' : ''}>${formatMonthLabel(y, m)}</option>`)
+    .join('');
+}
+
 function render() {
   const stats = computeStats();
+  const monthLabel = formatMonthLabel(selectedYear, selectedMonth);
+  const isCurrentMonth = selectedYear === now.getFullYear() && selectedMonth === now.getMonth();
 
-  document.getElementById('monthLabel').textContent = new Intl.DateTimeFormat('fr-BJ', {
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date());
-
+  document.getElementById('statIncomeHint').textContent = monthLabel;
+  document.getElementById('statExpensesHint').textContent = monthLabel;
   document.getElementById('statIncome').textContent = formatCurrency(stats.income);
   document.getElementById('statExpenses').textContent = formatCurrency(stats.expenses);
   document.getElementById('statBalance').textContent = formatCurrency(stats.balance);
@@ -254,12 +332,83 @@ function render() {
   document.getElementById('statSavings').textContent = `${stats.savingsRate.toFixed(0)}%`;
   document.getElementById('statBudgetTotal').textContent = `Budget : ${formatCurrency(stats.totalBudget)}`;
 
+  renderAlerts(getBudgetAlerts(stats.expensesByCategory));
   renderChart(stats.expensesByCategory);
   renderTxList(document.getElementById('recentList'), stats.monthTx, false, 6);
-  renderTxList(document.getElementById('allTxList'), state.transactions, true);
-  document.getElementById('txCount').textContent = state.transactions.length;
+  renderTxList(document.getElementById('allTxList'), stats.monthTx, true);
+  document.getElementById('txCount').textContent = stats.monthTx.length;
   renderBudgets(stats.expensesByCategory, stats.totalBudget, stats.expenses);
   updateCategorySelect();
+  buildMonthOptions();
+
+  document.getElementById('todayBtn').style.visibility = isCurrentMonth ? 'hidden' : 'visible';
+}
+
+function changeMonth(delta) {
+  selectedMonth += delta;
+  if (selectedMonth > 11) { selectedMonth = 0; selectedYear++; }
+  if (selectedMonth < 0) { selectedMonth = 11; selectedYear--; }
+  render();
+}
+
+function goToToday() {
+  selectedYear = now.getFullYear();
+  selectedMonth = now.getMonth();
+  render();
+}
+
+function downloadFile(content, filename, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportJson() {
+  const data = { ...state, exportedAt: new Date().toISOString(), version: 1 };
+  const filename = `gestion-budget-${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}.json`;
+  downloadFile(JSON.stringify(data, null, 2), filename, 'application/json');
+  showToast('Sauvegarde JSON téléchargée', 'success');
+}
+
+function exportCsv() {
+  const header = 'Date;Type;Catégorie;Description;Montant (FCFA)';
+  const rows = state.transactions
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .map((t) => {
+      const cat = getCategory(t.categoryId);
+      const desc = (t.description || '').replace(/;/g, ',');
+      return `${t.date};${t.type === 'income' ? 'Revenu' : 'Dépense'};${cat?.name || ''};${desc};${t.amount}`;
+    });
+  const filename = `gestion-budget-transactions.csv`;
+  downloadFile('\uFEFF' + [header, ...rows].join('\n'), filename, 'text/csv;charset=utf-8');
+  showToast('Export CSV téléchargé', 'success');
+}
+
+function importJson(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.transactions || !data.categories) throw new Error('Format invalide');
+      if (!confirm('Remplacer toutes vos données actuelles par la sauvegarde ?')) return;
+      state = {
+        transactions: data.transactions,
+        categories: mergeCategories(data.categories),
+      };
+      saveState();
+      render();
+      document.getElementById('importStatus').textContent = `✅ ${state.transactions.length} transactions restaurées`;
+      showToast('Sauvegarde restaurée avec succès', 'success');
+    } catch (err) {
+      document.getElementById('importStatus').textContent = '❌ Fichier invalide';
+      showToast('Impossible de lire le fichier', 'error');
+    }
+  };
+  reader.readAsText(file);
 }
 
 function escapeHtml(str) {
@@ -284,19 +433,16 @@ function initTypeToggle() {
     btn.addEventListener('click', () => {
       currentType = btn.dataset.type;
       document.querySelectorAll('.type-toggle__btn').forEach((b) => {
-        b.classList.remove('type-toggle__btn--active');
-        b.classList.toggle(`type-toggle__btn--${b.dataset.type}`, b.dataset.type === currentType);
+        b.classList.remove('type-toggle__btn--active', 'type-toggle__btn--expense', 'type-toggle__btn--income');
       });
-      btn.classList.add('type-toggle__btn--active');
+      btn.classList.add('type-toggle__btn--active', `type-toggle__btn--${currentType}`);
       updateCategorySelect();
     });
   });
-  document.querySelector('[data-type="expense"]').classList.add('type-toggle__btn--expense');
 }
 
 function initForm() {
   document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
-
   document.getElementById('txForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const amount = parseFloat(document.getElementById('txAmount').value);
@@ -305,22 +451,68 @@ function initForm() {
     const date = document.getElementById('txDate').value;
     if (!amount || amount <= 0) return;
 
-    state.transactions.unshift({
-      id: crypto.randomUUID(),
-      type: currentType,
-      amount,
-      categoryId,
-      description,
-      date,
-    });
+    state.transactions.unshift({ id: crypto.randomUUID(), type: currentType, amount, categoryId, description, date });
     saveState();
     document.getElementById('txAmount').value = '';
     document.getElementById('txDescription').value = '';
+
+    const d = new Date(date + 'T12:00:00');
+    selectedYear = d.getFullYear();
+    selectedMonth = d.getMonth();
     render();
+    showToast('Transaction ajoutée', 'success');
+  });
+}
+
+function initMonthPicker() {
+  document.getElementById('prevMonth').addEventListener('click', () => changeMonth(-1));
+  document.getElementById('nextMonth').addEventListener('click', () => changeMonth(1));
+  document.getElementById('todayBtn').addEventListener('click', goToToday);
+  document.getElementById('monthSelect').addEventListener('change', (e) => {
+    const [y, m] = e.target.value.split('-').map(Number);
+    selectedYear = y;
+    selectedMonth = m;
+    render();
+  });
+}
+
+function initDataTab() {
+  document.getElementById('exportJsonBtn').addEventListener('click', exportJson);
+  document.getElementById('exportCsvBtn').addEventListener('click', exportCsv);
+  document.getElementById('importJsonInput').addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (file) importJson(file);
+    e.target.value = '';
+  });
+}
+
+function initPWA() {
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+
+  let deferredPrompt;
+  const installBtn = document.getElementById('installBtn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.hidden = false;
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBtn.hidden = true;
   });
 }
 
 initTabs();
 initTypeToggle();
 initForm();
+initMonthPicker();
+initDataTab();
+initPWA();
 render();

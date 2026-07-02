@@ -2,8 +2,15 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GestionBudget — Gestion de budget (Bénin)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#008751" />
+  <meta name="description" content="Gestion de budget personnel au Bénin en FCFA" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>GestionBudget — Bénin</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon-192.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -13,30 +20,40 @@
   <header class="header">
     <div class="header__inner">
       <div class="header__logo">🇧🇯</div>
-      <div>
+      <div class="header__text">
         <h1 class="header__title">GestionBudget</h1>
-        <p class="header__subtitle">Bénin — Suivez vos revenus et dépenses en FCFA</p>
+        <p class="header__subtitle">Bénin — FCFA</p>
       </div>
+      <button type="button" id="installBtn" class="btn btn--install" hidden>📲 Installer</button>
     </div>
   </header>
 
   <main class="main">
-    <p class="month-label" id="monthLabel"></p>
+    <div class="toolbar">
+      <div class="month-picker">
+        <button type="button" id="prevMonth" class="month-picker__nav" aria-label="Mois précédent">‹</button>
+        <select id="monthSelect" class="month-picker__select" aria-label="Choisir le mois"></select>
+        <button type="button" id="nextMonth" class="month-picker__nav" aria-label="Mois suivant">›</button>
+        <button type="button" id="todayBtn" class="month-picker__today">Aujourd'hui</button>
+      </div>
+    </div>
+
+    <div id="budgetAlerts" class="alerts" hidden></div>
 
     <nav class="tabs" role="tablist">
       <button class="tabs__btn tabs__btn--active" data-tab="dashboard" role="tab">📊 Tableau de bord</button>
       <button class="tabs__btn" data-tab="transactions" role="tab">📝 Transactions</button>
       <button class="tabs__btn" data-tab="budgets" role="tab">🐷 Budgets</button>
+      <button class="tabs__btn" data-tab="data" role="tab">💾 Données</button>
     </nav>
 
-    <!-- Tableau de bord -->
     <section id="tab-dashboard" class="tab-panel tab-panel--active">
       <div class="stats-grid">
         <article class="stat-card stat-card--income">
           <div>
             <p class="stat-card__label">Revenus</p>
             <p class="stat-card__value" id="statIncome">0 FCFA</p>
-            <p class="stat-card__hint">Ce mois</p>
+            <p class="stat-card__hint" id="statIncomeHint">Ce mois</p>
           </div>
           <span class="stat-card__icon">↓</span>
         </article>
@@ -44,7 +61,7 @@
           <div>
             <p class="stat-card__label">Dépenses</p>
             <p class="stat-card__value" id="statExpenses">0 FCFA</p>
-            <p class="stat-card__hint">Ce mois</p>
+            <p class="stat-card__hint" id="statExpensesHint">Ce mois</p>
           </div>
           <span class="stat-card__icon">↑</span>
         </article>
@@ -78,17 +95,14 @@
       </div>
     </section>
 
-    <!-- Transactions -->
     <section id="tab-transactions" class="tab-panel">
       <div class="grid-form">
         <article class="card">
           <h2 class="card__title">Nouvelle transaction</h2>
-
           <div class="type-toggle">
-            <button type="button" class="type-toggle__btn type-toggle__btn--active" data-type="expense">Dépense</button>
+            <button type="button" class="type-toggle__btn type-toggle__btn--active type-toggle__btn--expense" data-type="expense">Dépense</button>
             <button type="button" class="type-toggle__btn" data-type="income">Revenu</button>
           </div>
-
           <form id="txForm" class="form">
             <label class="form__label">
               Montant (FCFA)
@@ -100,7 +114,7 @@
             </label>
             <label class="form__label">
               Description
-              <input type="text" id="txDescription" class="form__input" placeholder="Ex: Courses au marché, crédit MTN..." />
+              <input type="text" id="txDescription" class="form__input" placeholder="Ex: Cotisation tontine, MTN MoMo..." />
             </label>
             <label class="form__label">
               Date
@@ -109,15 +123,13 @@
             <button type="submit" class="btn btn--primary">+ Ajouter</button>
           </form>
         </article>
-
         <article class="card">
-          <h2 class="card__title">Historique (<span id="txCount">0</span>)</h2>
+          <h2 class="card__title">Historique du mois (<span id="txCount">0</span>)</h2>
           <ul id="allTxList" class="tx-list"></ul>
         </article>
       </div>
     </section>
 
-    <!-- Budgets -->
     <section id="tab-budgets" class="tab-panel">
       <div class="grid-2">
         <article class="card">
@@ -136,7 +148,7 @@
               <span>Dépensé ce mois</span>
               <strong id="overviewSpent">0 FCFA</strong>
             </div>
-            <div class="overview__row overview__row--remaining">
+            <div class="overview__row overview__row--remaining" id="overviewRemainingRow">
               <span>Reste disponible</span>
               <strong id="overviewRemaining">0 FCFA</strong>
             </div>
@@ -144,7 +156,43 @@
         </article>
       </div>
     </section>
+
+    <section id="tab-data" class="tab-panel">
+      <div class="grid-2">
+        <article class="card">
+          <h2 class="card__title">Exporter mes données</h2>
+          <p class="card__desc">Sauvegardez vos transactions pour ne rien perdre.</p>
+          <div class="data-actions">
+            <button type="button" id="exportJsonBtn" class="btn btn--primary btn--block">📄 Exporter JSON (sauvegarde complète)</button>
+            <button type="button" id="exportCsvBtn" class="btn btn--secondary btn--block">📊 Exporter CSV (tableur)</button>
+          </div>
+        </article>
+        <article class="card">
+          <h2 class="card__title">Restaurer une sauvegarde</h2>
+          <p class="card__desc">Importez un fichier JSON exporté précédemment.</p>
+          <div class="data-actions">
+            <label class="btn btn--secondary btn--block file-label">
+              📂 Importer JSON
+              <input type="file" id="importJsonInput" accept=".json,application/json" hidden />
+            </label>
+          </div>
+          <p id="importStatus" class="import-status"></p>
+        </article>
+      </div>
+      <article class="card card--info">
+        <h2 class="card__title">📲 Installer sur téléphone</h2>
+        <p class="card__desc">Pour installer l'application :</p>
+        <ul class="info-list">
+          <li><strong>Android (Chrome)</strong> — Menu ⋮ → « Ajouter à l'écran d'accueil »</li>
+          <li><strong>iPhone (Safari)</strong> — Partager → « Sur l'écran d'accueil »</li>
+          <li><strong>PC</strong> — Cliquez sur « Installer » en haut à droite (si disponible)</li>
+        </ul>
+        <p class="card__desc card__desc--small">L'installation PWA nécessite d'ouvrir l'app via un navigateur (pas en fichier local sur certains appareils).</p>
+      </article>
+    </section>
   </main>
+
+  <div id="toast" class="toast" hidden></div>
 
   <script src="app.js"></script>
 </body>

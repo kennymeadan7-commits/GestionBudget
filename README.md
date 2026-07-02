@@ -1,46 +1,41 @@
 # GestionBudget 🇧🇯
 
-Application de gestion de budget personnelle adaptée au **Bénin**, en **HTML / CSS / JavaScript** — fonctionne sans installation.
-
-Devise : **Franc CFA (FCFA / XOF)**
+Application de gestion de budget personnelle adaptée au **Bénin**, en **FCFA**.
 
 ## Lancer l'application
 
-Double-cliquez sur **`OUVRIR.bat`** (Windows) ou ouvrez **`index.html`** dans votre navigateur.
-
-```cmd
-start index.html
-```
-
-## Catégories adaptées au Bénin
-
-**Revenus :** Salaire, Commerce / Activité, Transfert famille, Mobile Money reçu
-
-**Dépenses :** Alimentation / Marché, Transport (zémi, taxi), Logement, Crédit téléphone, SBEE / SONEB, Éducation, Santé, Mobile Money, Habits, Loisirs, Famille / Entraide
+Double-cliquez sur **`OUVRIR.bat`** ou ouvrez **`index.html`** dans votre navigateur.
 
 ## Fonctionnalités
 
-- Tableau de bord en FCFA (revenus, dépenses, solde, taux d'épargne)
-- Ajout et suppression de transactions
-- Budgets par catégorie avec barres de progression
-- Graphique de répartition des dépenses
-- Données sauvegardées dans le navigateur (localStorage)
+- **FCFA** — Tous les montants en Franc CFA
+- **Filtre par mois** — Naviguez entre les mois passés
+- **Alertes budget** — Avertissement à 80 % et alerte si dépassé
+- **Export CSV / JSON** — Sauvegardez et restaurez vos données
+- **PWA** — Installable sur téléphone (Android / iPhone)
+- **Catégories locales** — MTN MoMo, Moov Money, Tontine, SBEE, zémidjan...
 
-## Fichiers principaux
+## Onglet « Données »
+
+| Action | Description |
+|--------|-------------|
+| Exporter JSON | Sauvegarde complète (transactions + catégories) |
+| Exporter CSV | Ouvrir dans Excel / LibreOffice |
+| Importer JSON | Restaurer une sauvegarde |
+
+## Installer sur téléphone
+
+1. Hébergez l'app en ligne (GitHub Pages) ou ouvrez via navigateur
+2. **Android** — Menu ⋮ → « Ajouter à l'écran d'accueil »
+3. **iPhone** — Partager → « Sur l'écran d'accueil »
+
+## Fichiers
 
 | Fichier | Rôle |
 |---------|------|
 | `index.html` | Page principale |
 | `styles.css` | Mise en forme |
-| `app.js` | Logique et sauvegarde |
-| `OUVRIR.bat` | Lance l'app en un clic (Windows) |
-
----
-
-## Version React (optionnelle)
-
-```bash
-cd react-app
-npm install
-npm run dev
-```
+| `app.js` | Logique |
+| `manifest.json` | Configuration PWA |
+| `sw.js` | Mode hors ligne |
+| `OUVRIR.bat` | Lancement Windows |
