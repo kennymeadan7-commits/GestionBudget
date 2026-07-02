@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GestionBudget — Gestion de budget</title>
+  <title>GestionBudget — Gestion de budget (Bénin)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -12,10 +12,10 @@
 <body>
   <header class="header">
     <div class="header__inner">
-      <div class="header__logo">💰</div>
+      <div class="header__logo">🇧🇯</div>
       <div>
         <h1 class="header__title">GestionBudget</h1>
-        <p class="header__subtitle">Suivez vos revenus et dépenses</p>
+        <p class="header__subtitle">Bénin — Suivez vos revenus et dépenses en FCFA</p>
       </div>
     </div>
   </header>
@@ -35,7 +35,7 @@
         <article class="stat-card stat-card--income">
           <div>
             <p class="stat-card__label">Revenus</p>
-            <p class="stat-card__value" id="statIncome">0,00 €</p>
+            <p class="stat-card__value" id="statIncome">0 FCFA</p>
             <p class="stat-card__hint">Ce mois</p>
           </div>
           <span class="stat-card__icon">↓</span>
@@ -43,7 +43,7 @@
         <article class="stat-card stat-card--expense">
           <div>
             <p class="stat-card__label">Dépenses</p>
-            <p class="stat-card__value" id="statExpenses">0,00 €</p>
+            <p class="stat-card__value" id="statExpenses">0 FCFA</p>
             <p class="stat-card__hint">Ce mois</p>
           </div>
           <span class="stat-card__icon">↑</span>
@@ -51,7 +51,7 @@
         <article class="stat-card stat-card--balance">
           <div>
             <p class="stat-card__label">Solde</p>
-            <p class="stat-card__value" id="statBalance">0,00 €</p>
+            <p class="stat-card__value" id="statBalance">0 FCFA</p>
             <p class="stat-card__hint" id="statBalanceHint">—</p>
           </div>
           <span class="stat-card__icon">📈</span>
@@ -60,7 +60,7 @@
           <div>
             <p class="stat-card__label">Taux d'épargne</p>
             <p class="stat-card__value" id="statSavings">0%</p>
-            <p class="stat-card__hint" id="statBudgetTotal">Budget : 0,00 €</p>
+            <p class="stat-card__hint" id="statBudgetTotal">Budget : 0 FCFA</p>
           </div>
           <span class="stat-card__icon">🐷</span>
         </article>
@@ -91,8 +91,8 @@
 
           <form id="txForm" class="form">
             <label class="form__label">
-              Montant (€)
-              <input type="number" id="txAmount" class="form__input" step="0.01" min="0.01" placeholder="0,00" required />
+              Montant (FCFA)
+              <input type="number" id="txAmount" class="form__input" step="1" min="1" placeholder="Ex: 5000" required />
             </label>
             <label class="form__label">
               Catégorie
@@ -100,7 +100,7 @@
             </label>
             <label class="form__label">
               Description
-              <input type="text" id="txDescription" class="form__input" placeholder="Ex: Courses du week-end" />
+              <input type="text" id="txDescription" class="form__input" placeholder="Ex: Courses au marché, crédit MTN..." />
             </label>
             <label class="form__label">
               Date
@@ -130,15 +130,15 @@
           <div class="overview">
             <div class="overview__row">
               <span>Budget mensuel total</span>
-              <strong id="overviewBudget">0,00 €</strong>
+              <strong id="overviewBudget">0 FCFA</strong>
             </div>
             <div class="overview__row overview__row--expense">
               <span>Dépensé ce mois</span>
-              <strong id="overviewSpent">0,00 €</strong>
+              <strong id="overviewSpent">0 FCFA</strong>
             </div>
             <div class="overview__row overview__row--remaining">
               <span>Reste disponible</span>
-              <strong id="overviewRemaining">0,00 €</strong>
+              <strong id="overviewRemaining">0 FCFA</strong>
             </div>
           </div>
         </article>

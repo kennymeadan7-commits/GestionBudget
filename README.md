@@ -1,34 +1,30 @@
-# GestionBudget
+# GestionBudget 🇧🇯
 
-Application de gestion de budget personnelle en **HTML / CSS / JavaScript** — fonctionne sans installation.
+Application de gestion de budget personnelle adaptée au **Bénin**, en **HTML / CSS / JavaScript** — fonctionne sans installation.
 
-## Windows — Démarrage rapide
+Devise : **Franc CFA (FCFA / XOF)**
 
-### 1. Télécharger le projet
+## Lancer l'application
 
-**Option A — Git :**
+Double-cliquez sur **`OUVRIR.bat`** (Windows) ou ouvrez **`index.html`** dans votre navigateur.
+
 ```cmd
-cd C:\Users\DG
-git clone https://github.com/kennymeadan7-commits/GestionBudget.git
-cd GestionBudget
-```
-
-**Option B — ZIP :**
-1. Allez sur https://github.com/kennymeadan7-commits/GestionBudget
-2. Cliquez sur **Code** → **Download ZIP**
-3. Extrayez le ZIP (ex. dans `C:\Users\DG\GestionBudget`)
-
-### 2. Ouvrir l'application
-
-**Méthode la plus simple :** double-cliquez sur `OUVRIR.bat`
-
-**Ou en ligne de commande** (depuis le dossier du projet) :
-```cmd
-cd C:\Users\DG\GestionBudget
 start index.html
 ```
 
-> **Important :** la commande `start index.html` doit être lancée **depuis le dossier GestionBudget**, pas depuis `C:\Users\DG` seul.
+## Catégories adaptées au Bénin
+
+**Revenus :** Salaire, Commerce / Activité, Transfert famille, Mobile Money reçu
+
+**Dépenses :** Alimentation / Marché, Transport (zémi, taxi), Logement, Crédit téléphone, SBEE / SONEB, Éducation, Santé, Mobile Money, Habits, Loisirs, Famille / Entraide
+
+## Fonctionnalités
+
+- Tableau de bord en FCFA (revenus, dépenses, solde, taux d'épargne)
+- Ajout et suppression de transactions
+- Budgets par catégorie avec barres de progression
+- Graphique de répartition des dépenses
+- Données sauvegardées dans le navigateur (localStorage)
 
 ## Fichiers principaux
 
@@ -39,19 +35,9 @@ start index.html
 | `app.js` | Logique et sauvegarde |
 | `OUVRIR.bat` | Lance l'app en un clic (Windows) |
 
-## Fonctionnalités
-
-- Tableau de bord (revenus, dépenses, solde, taux d'épargne)
-- Ajout et suppression de transactions
-- Budgets par catégorie avec barres de progression
-- Graphique de répartition des dépenses
-- Données sauvegardées dans le navigateur (localStorage)
-
 ---
 
 ## Version React (optionnelle)
-
-Une version React se trouve dans le dossier `react-app/` :
 
 ```bash
 cd react-app

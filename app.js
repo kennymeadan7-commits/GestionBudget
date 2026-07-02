@@ -1,17 +1,24 @@
-const STORAGE_KEY = 'gestion-budget-local';
+const STORAGE_KEY = 'gestion-budget-benin';
 
-const INCOME_IDS = ['salary', 'freelance'];
+const INCOME_IDS = ['salary', 'commerce', 'transfert', 'mobile_in'];
 
 const DEFAULT_CATEGORIES = [
   { id: 'salary', name: 'Salaire', color: '#10b981' },
-  { id: 'freelance', name: 'Freelance', color: '#06b6d4' },
-  { id: 'food', name: 'Alimentation', color: '#f59e0b', budgetLimit: 400 },
-  { id: 'transport', name: 'Transport', color: '#6366f1', budgetLimit: 150 },
-  { id: 'housing', name: 'Logement', color: '#8b5cf6', budgetLimit: 900 },
-  { id: 'entertainment', name: 'Loisirs', color: '#ec4899', budgetLimit: 200 },
-  { id: 'health', name: 'Santé', color: '#14b8a6', budgetLimit: 100 },
-  { id: 'shopping', name: 'Shopping', color: '#f97316', budgetLimit: 150 },
-  { id: 'other', name: 'Autre', color: '#64748b', budgetLimit: 100 },
+  { id: 'commerce', name: 'Commerce / Activité', color: '#06b6d4' },
+  { id: 'transfert', name: 'Transfert (famille)', color: '#22c55e' },
+  { id: 'mobile_in', name: 'Mobile Money reçu', color: '#facc15' },
+  { id: 'food', name: 'Alimentation / Marché', color: '#f59e0b', budgetLimit: 120000 },
+  { id: 'transport', name: 'Transport (zémi, taxi)', color: '#6366f1', budgetLimit: 40000 },
+  { id: 'housing', name: 'Logement / Loyer', color: '#8b5cf6', budgetLimit: 80000 },
+  { id: 'communication', name: 'Crédit téléphone', color: '#0ea5e9', budgetLimit: 15000 },
+  { id: 'utilities', name: 'SBEE / SONEB', color: '#eab308', budgetLimit: 25000 },
+  { id: 'education', name: 'Éducation / Scolarité', color: '#3b82f6', budgetLimit: 50000 },
+  { id: 'health', name: 'Santé', color: '#14b8a6', budgetLimit: 20000 },
+  { id: 'mobile_out', name: 'Mobile Money (frais)', color: '#facc15', budgetLimit: 10000 },
+  { id: 'clothing', name: 'Habits / Vêtements', color: '#f97316', budgetLimit: 30000 },
+  { id: 'entertainment', name: 'Loisirs', color: '#ec4899', budgetLimit: 25000 },
+  { id: 'family', name: 'Famille / Entraide', color: '#a855f7', budgetLimit: 30000 },
+  { id: 'other', name: 'Autre', color: '#64748b', budgetLimit: 20000 },
 ];
 
 function getDemoTransactions() {
@@ -19,14 +26,16 @@ function getDemoTransactions() {
   const y = now.getFullYear();
   const m = String(now.getMonth() + 1).padStart(2, '0');
   return [
-    { id: 'd1', type: 'income', amount: 2800, categoryId: 'salary', description: 'Salaire mensuel', date: `${y}-${m}-01` },
-    { id: 'd2', type: 'expense', amount: 850, categoryId: 'housing', description: 'Loyer', date: `${y}-${m}-03` },
-    { id: 'd3', type: 'expense', amount: 127.45, categoryId: 'food', description: 'Courses Carrefour', date: `${y}-${m}-05` },
-    { id: 'd4', type: 'expense', amount: 65, categoryId: 'transport', description: 'Abonnement métro', date: `${y}-${m}-05` },
-    { id: 'd5', type: 'expense', amount: 42.99, categoryId: 'entertainment', description: 'Netflix + Spotify', date: `${y}-${m}-08` },
-    { id: 'd6', type: 'expense', amount: 89.5, categoryId: 'food', description: 'Restaurant', date: `${y}-${m}-12` },
-    { id: 'd7', type: 'income', amount: 450, categoryId: 'freelance', description: 'Mission freelance', date: `${y}-${m}-15` },
-    { id: 'd8', type: 'expense', amount: 35, categoryId: 'health', description: 'Pharmacie', date: `${y}-${m}-18` },
+    { id: 'd1', type: 'income', amount: 250000, categoryId: 'salary', description: 'Salaire mensuel', date: `${y}-${m}-01` },
+    { id: 'd2', type: 'expense', amount: 75000, categoryId: 'housing', description: 'Loyer mensuel', date: `${y}-${m}-03` },
+    { id: 'd3', type: 'expense', amount: 18500, categoryId: 'food', description: 'Courses au marché Dantokpa', date: `${y}-${m}-05` },
+    { id: 'd4', type: 'expense', amount: 3500, categoryId: 'transport', description: 'Zémidjans de la semaine', date: `${y}-${m}-06` },
+    { id: 'd5', type: 'expense', amount: 5000, categoryId: 'communication', description: 'Crédit MTN MoMo', date: `${y}-${m}-07` },
+    { id: 'd6', type: 'expense', amount: 15000, categoryId: 'utilities', description: 'Facture SBEE', date: `${y}-${m}-08` },
+    { id: 'd7', type: 'expense', amount: 12000, categoryId: 'food', description: 'Repas maquis', date: `${y}-${m}-12` },
+    { id: 'd8', type: 'income', amount: 45000, categoryId: 'commerce', description: 'Vente boutique', date: `${y}-${m}-15` },
+    { id: 'd9', type: 'expense', amount: 8000, categoryId: 'health', description: 'Pharmacie', date: `${y}-${m}-18` },
+    { id: 'd10', type: 'income', amount: 30000, categoryId: 'transfert', description: 'Transfert famille', date: `${y}-${m}-20` },
   ];
 }
 
@@ -46,11 +55,16 @@ function saveState() {
 }
 
 function formatCurrency(amount) {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(amount);
+  return new Intl.NumberFormat('fr-BJ', {
+    style: 'currency',
+    currency: 'XOF',
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+  }).format(amount);
 }
 
 function formatDate(dateStr) {
-  return new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(dateStr));
+  return new Intl.DateTimeFormat('fr-BJ', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(dateStr));
 }
 
 function getCategory(id) {
@@ -187,7 +201,7 @@ function renderBudgets(expensesByCategory, totalBudget, expenses) {
             <span class="budget-item__remaining ${isOver ? 'budget-item__remaining--over' : ''}">
               ${isOver ? `Dépassé de ${formatCurrency(Math.abs(remaining))}` : `Reste ${formatCurrency(remaining)}`}
             </span>
-            <input type="number" class="budget-item__input" value="${limit}" min="0" step="10" data-cat="${category.id}" title="Modifier le budget" />
+            <input type="number" class="budget-item__input" value="${limit}" min="0" step="500" data-cat="${category.id}" title="Modifier le budget" />
           </div>
         </div>
       `;
@@ -228,7 +242,7 @@ function updateCategorySelect() {
 function render() {
   const stats = computeStats();
 
-  document.getElementById('monthLabel').textContent = new Intl.DateTimeFormat('fr-FR', {
+  document.getElementById('monthLabel').textContent = new Intl.DateTimeFormat('fr-BJ', {
     month: 'long',
     year: 'numeric',
   }).format(new Date());

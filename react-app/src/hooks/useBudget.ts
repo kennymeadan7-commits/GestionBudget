@@ -3,7 +3,7 @@ import { DEFAULT_CATEGORIES } from '../data/defaultCategories'
 import { DEMO_TRANSACTIONS } from '../data/demoTransactions'
 import type { BudgetState, Category, Transaction } from '../types'
 
-const STORAGE_KEY = 'gestion-budget-data'
+const STORAGE_KEY = 'gestion-budget-benin'
 
 function loadState(): BudgetState {
   try {
@@ -126,14 +126,16 @@ export function useBudget() {
 }
 
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('fr-FR', {
+  return new Intl.NumberFormat('fr-BJ', {
     style: 'currency',
-    currency: 'EUR',
+    currency: 'XOF',
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
   }).format(amount)
 }
 
 export function formatDate(dateStr: string): string {
-  return new Intl.DateTimeFormat('fr-FR', {
+  return new Intl.DateTimeFormat('fr-BJ', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

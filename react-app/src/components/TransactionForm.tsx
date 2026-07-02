@@ -21,7 +21,7 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
 
   const filteredCategories = categories.filter((c) => {
-    const incomeIds = ['salary', 'freelance']
+    const incomeIds = ['salary', 'commerce', 'transfert', 'mobile_in']
     if (type === 'income') return incomeIds.includes(c.id) || !c.budgetLimit
     return !incomeIds.includes(c.id) || c.budgetLimit !== undefined
   })
@@ -67,14 +67,14 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1.5">Montant (€)</label>
+          <label className="block text-sm font-medium text-slate-600 mb-1.5">Montant (FCFA)</label>
           <input
             type="number"
-            step="0.01"
-            min="0"
+            step="1"
+            min="1"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            placeholder="0,00"
+            placeholder="Ex: 5000"
             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900"
             required
           />
@@ -102,7 +102,7 @@ export function TransactionForm({ categories, onSubmit }: TransactionFormProps) 
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Ex: Courses du week-end"
+            placeholder="Ex: Courses au marché, crédit MTN..."
             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-slate-900"
           />
         </div>
